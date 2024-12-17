@@ -315,6 +315,11 @@ namespace BinarySerialization.Graph.ValueGraph
                     return;
                 }
 
+                if (stream.AvailableForReading < 0)
+                {
+                    throw new Exception("Read passed end of stream, binary message does not fit the provided type.");
+                }
+
                 AlignLeft(stream);
 
                 var offset = GetFieldOffset();
