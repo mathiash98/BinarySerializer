@@ -315,9 +315,9 @@ namespace BinarySerialization.Graph.ValueGraph
                     return;
                 }
 
-                if (stream.AvailableForReading < 0)
+                if (stream.AvailableForReading < -1) // Checking less than -1 as some cases returns -1 on unreadable stream see `ShouldThrowIOExceptionNotInvalidOperationExceptionTest`
                 {
-                    throw new Exception("Read passed end of stream, binary message does not fit the provided type.");
+                    throw new IndexOutOfRangeException("Read passed end of stream, binary message does not fit the provided type.");
                 }
 
                 AlignLeft(stream);
@@ -369,6 +369,11 @@ namespace BinarySerialization.Graph.ValueGraph
                 if (!ShouldDeserialize)
                 {
                     return;
+                }
+
+                if (stream.AvailableForReading < -1) // Checking less than -1 as some cases returns -1 on unreadable stream see `ShouldThrowIOExceptionNotInvalidOperationExceptionTest`
+                {
+                    throw new IndexOutOfRangeException("Read passed end of stream, binary message does not fit the provided type.");
                 }
 
                 AlignLeft(stream);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinarySerialization.Test.Issues.Issue180
@@ -93,7 +94,6 @@ namespace BinarySerialization.Test.Issues.Issue180
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void TestInfinityLoop_ShouldNotBeInfinityLoop_ShouldCrash()
         {
             var msg = new byte[]
@@ -103,7 +103,20 @@ namespace BinarySerialization.Test.Issues.Issue180
                 75, // 7 bits + 1 bit
             };
             var ser = new BinarySerializer();
-            ser.Deserialize<ObservationWrapper>(msg); // Infinite loop
+            Assert.ThrowsException<InvalidOperationException>(() => ser.Deserialize<ObservationWrapper>(msg));
+        }
+
+        [TestMethod]
+        public void TestInfinityLoop_ShouldNotBeInfinityLoop_ShouldCrashOnAsync()
+        {
+            var msg = new byte[]
+            {
+                1, // 1 Byte which does not fit into the provided type
+                67, // OneByteArray
+                75, // 7 bits + 1 bit
+            };
+            var ser = new BinarySerializer();
+            Assert.ThrowsExceptionAsync<InvalidOperationException>(() => ser.DeserializeAsync<ObservationWrapper>(msg));
         }
 
         [TestMethod]
